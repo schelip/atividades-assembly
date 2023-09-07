@@ -1,3 +1,5 @@
+#Douglas Kenji Sakakibara RA117741
+#Felipe Gabriel Comin Scheffel RA117306
 .section .data
 	
 	abertura:	.asciz	"Programa para operar vetores\n"
@@ -19,7 +21,7 @@
 	vetor1:		.int	0
 	vetor2:		.int	0
 	vetor3:     .int    0
-	#numElem     .int    0
+
 
 	tipoNum:	.asciz "%d"
 	mostraNum:	.asciz	"%d, "
@@ -111,7 +113,7 @@ _leVetores:
 	movl	$1, %ebx
 	call	leVetor
 
-	movl	vetor2, %esi
+	movl	vetor2, %edi
 	movl	$2, %ebx
 	call	leVetor
 	
@@ -127,7 +129,7 @@ leVetor:
 	movl	tamVet, %ecx
 	movl	$1, %ebx
 
-_volta:
+_voltaVetor:
 
 	pushl	%ecx
 	pushl	%ebx
@@ -149,9 +151,11 @@ _volta:
 	incl	%ebx
 	addl	$4, %edi
 
-	loop	_volta
+	loop	_voltaVetor
 
 	RET
+
+
 
 _comparaVetores:
 
@@ -190,29 +194,25 @@ _vetDiferentes:
 	RET
 
 _achaIntersecao:
-	call	achaIntersecao
-	RET
-
-achaIntersecao:
-	movl	vetor1, %edi
-	movl	vetor2, %esi
-	movl    vetor3, %edx
-	movl	tamVet, %ecx
+	movl	vetor1, %edi # valor inicial do espaço reservado para o vetor 1 é movido para EDI
+	movl	vetor2, %esi # valor inicial do espaço reservado para o vetor 2 é movido para ESI
+	movl    vetor3, %edx # valor inicial do espaço reservado para o vetor 3 é movido para EDX
+	movl	tamVet, %ecx # ECX = nElem (nº de elementos do vetor)
 	movl	$1, %ebx
-	#RET
+	
 
 _continua:
-	movl	(%esi), %eax
-	cmpl	(%edi), %eax
-	je      _insere
+	movl	(%edi), %eax # move conteúdo apontado por edi para EAX (1º elemento do vetor)		
+	cmpl	(%esi), %eax # compara o valor do ESI que seria o primeiro elemento do vetor 2 com o valor de EAX
+	je      _insere # caso o valor seja igual ele direciona para o bloco _insere, caso não seja ele continua a percorrer os elementos
 
 _continua2:	
-	addl	$4, %edi
-	addl	$4, %esi
-	incl	%ebx
+	addl	$4, %edi # soma 4 ao endereço do EDI, para pegar o próx. elemento do vetor
+	addl	$4, %esi # soma 4 ao endereço do ESI, para pegar o próx. elemento do vetor
+	incl	%ebx # incrementa índice da busca
 
-	loop	_continua
-	jmp     _mostraVet
+	loop	_continua # ECX = ECX - 1
+	jmp     _mostraVet # quando termina a varredura dos vetores ele direciona_mostraVet que vai mostrar os elementos de Intersecao dos dois vetores
 
 
 _insere:
@@ -220,25 +220,25 @@ _insere:
 	jmp     _continua2
 
 insere:
-	movl   (%edi), %edx
-	addl	$4, %edx
+	movl   %eax, (%edx) #move o valor de EAX para EDX    
+	addl	$4, %edx  #soma 4 ao endereço do EDX
 	RET
 
-_mostraVet:
-	movl	vetor3, %edx
-	movl	tamVet, %ecx
+_mostraVet: 
+	movl	vetor3, %edx # move o endereco reservado para o vetor 3 é movido para o EDX
+	movl	tamVet, %ecx # ECX = nElem (nº de elementos do vetor)
 
 _mostraMaisUm:
 
-	pushl	%ecx
-	pushl	%edx
-
+	pushl	%ecx # backup do ECX
+	pushl	%edx # backup do EDX
+ 
 	pushl	$mostraVetor
 	call	printf
 	addl	$4, %esp
 	
-	popl	%edx
-	popl	%ecx
+	popl	%edx # backup do EDX
+	popl	%ecx # backup do ECX
 
 _volta1:
 
@@ -255,7 +255,7 @@ _volta1:
 	popl	%edx
 	popl	%ecx
 
-	addl	$4, %ebp
+	addl	$4, %edx
 
 	loop	_volta1
 
