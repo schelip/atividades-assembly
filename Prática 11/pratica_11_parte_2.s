@@ -1,4 +1,5 @@
-
+#Douglas Kenji Sakakibara RA117741
+#Felipe Gabriel Comin Scheffel RA117306
 .section .data
 	
 	abertura:	.asciz	"\nPrograma para operar vetores\n"
